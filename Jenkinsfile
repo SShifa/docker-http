@@ -3,45 +3,36 @@ pipeline {
 
     stages {
 
-        stage('Clean') {
-            steps {
-                cleanWs()
-            }
-        }
-
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Deploy') {
+        stage('Deploy Q1') {
             steps {
-                script {
+                sh '''
+                git checkout q1-2026
+                docker cp index.html q1-2026:/usr/local/apache2/htdocs/index.html
+                '''
+            }
+        }
 
-                    def branch = sh(script: "git rev-parse --abbrev-ref HEAD || echo detached", returnStdout: true).trim()
+        stage('Deploy Q2') {
+            steps {
+                sh '''
+                git checkout q2-2026
+                docker cp index.html q2-2026:/usr/local/apache2/htdocs/index.html
+                '''
+            }
+        }
 
-                    if (branch.contains("q1")) {
-                        sh '''
-                        docker cp index.html q1-2026:/usr/local/apache2/htdocs/index.html
-                        docker restart q1-2026
-                        '''
-                    }
-
-                    if (branch.contains("q2")) {
-                        sh '''
-                        docker cp index.html q2-2026:/usr/local/apache2/htdocs/index.html
-                        docker restart q2-2026
-                        '''
-                    }
-
-                    if (branch.contains("q3")) {
-                        sh '''
-                        docker cp index.html q3-2026:/usr/local/apache2/htdocs/index.html
-                        docker restart q3-2026
-                        '''
-                    }
-                }
+        stage('Deploy Q3') {
+            steps {
+                sh '''
+                git checkout q3-2026
+                docker cp index.html q3-2026:/usr/local/apache2/htdocs/index.html
+                '''
             }
         }
     }
