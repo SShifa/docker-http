@@ -3,15 +3,21 @@ pipeline {
 
     stages {
 
+        stage('Clean Workspace') {
+            steps {
+                cleanWs()
+            }
+        }
+
         stage('Checkout') {
             steps {
                 checkout scm
             }
         }
 
-        stage('Show Branch') {
+        stage('Show Git Content') {
             steps {
-                sh 'git branch --show-current'
+                sh 'echo "Branch:" && git branch --show-current'
                 sh 'cat index.html'
             }
         }
@@ -29,20 +35,19 @@ pipeline {
                         '''
                     }
 
-                    else if (branch == "q2-2026") {
+                    if (branch == "q2-2026") {
                         sh '''
                         docker cp index.html q2-2026:/usr/local/apache2/htdocs/index.html
                         docker restart q2-2026
                         '''
                     }
 
-                    else if (branch == "q3-2026") {
+                    if (branch == "q3-2026") {
                         sh '''
                         docker cp index.html q3-2026:/usr/local/apache2/htdocs/index.html
                         docker restart q3-2026
                         '''
                     }
-
                 }
             }
         }
